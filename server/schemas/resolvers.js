@@ -1,5 +1,6 @@
 const { AuthenticationError } = require('apollo-server-express');
 const { User } = require('../models');
+const { signToken } = require('../utils/auth');
 
 const resolvers = {
 	Query: {
@@ -17,12 +18,14 @@ const resolvers = {
 	},
 
 	Mutation: {
+		// WORKS
 		addUser: async (parent, args) => {
 			const userData = await User.create(args);
 			const token = signToken(userData);
 
 			return { token, userData };
 		},
+		// WORKS
 		login: async (parent, args) => {
 			const user = await User.findOne({
 				$or: [{ username: args.username }, { email: args.email }],
@@ -40,8 +43,30 @@ const resolvers = {
 			return { token, user };
 		},
         saveBook: async (parent, args) => {
-            con
-        }
+			console.log(args.user);
+			try {
+			  const updatedUser = await User.findOneAndUpdate(
+				{ _id: args.user._id },
+				{ $addToSet: { savedBooks: args.body } },
+				{ new: true, runValidators: true }
+			  );
+			  return updatedUser;
+			} catch (err) {
+			  console.log(err);
+			  throw new AuthenticationError(err);
+			}
+        },
+		removeBook: async (parent, args) => {
+			const updatedUser = await User.findOneAndUpdate(
+				{ _id: args.user._id },
+				{ $pull: { savedBooks: { bookId: args.bookId } } },
+				{ new: true }
+			  );
+			  if (!updatedUser) {
+				throw new AuthenticationError("Couldn't find user with this id");
+			  }
+			  return updatedUser;
+		}
 	},
 };
 
