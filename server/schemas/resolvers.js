@@ -44,8 +44,8 @@ const resolvers = {
 			return { token, user };
 		},
 		// CANT WORK OUT HOW TO TEST UNTIL FRONTEND UP
-		// TODO TEST THIS
-        saveBook: async (parent, args) => {
+		// TODO ADD CONTEXT AND TEST THIS
+        saveBook: async (parent, args, context) => {
 			console.log(args.user);
 			try {
 			  const updatedUser = await User.findOneAndUpdate(
@@ -60,7 +60,7 @@ const resolvers = {
 			}
         },
 		// TODO TEST THIS
-		removeBook: async (parent, args) => {
+		removeBook: async (parent, args, context) => {
 			const updatedUser = await User.findOneAndUpdate(
 				{ _id: args.user._id },
 				{ $pull: { savedBooks: { bookId: args.bookId } } },
