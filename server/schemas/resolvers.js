@@ -4,6 +4,7 @@ const { signToken } = require('../utils/auth');
 
 const resolvers = {
 	Query: {
+		// WORKS WHEN LOGGED IN
 		me: async (parent, args, context) => {
 			if (context.user) {
 				const userData = await User.findOne({
@@ -42,6 +43,8 @@ const resolvers = {
 			const token = signToken(user);
 			return { token, user };
 		},
+		// CANT WORK OUT HOW TO TEST UNTIL FRONTEND UP
+		// TODO TEST THIS
         saveBook: async (parent, args) => {
 			console.log(args.user);
 			try {
@@ -56,6 +59,7 @@ const resolvers = {
 			  throw new AuthenticationError(err);
 			}
         },
+		// TODO TEST THIS
 		removeBook: async (parent, args) => {
 			const updatedUser = await User.findOneAndUpdate(
 				{ _id: args.user._id },
