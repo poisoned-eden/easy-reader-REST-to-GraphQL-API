@@ -66,17 +66,13 @@ const SearchBooks = () => {
 		console.log(bookInput);
 		
 		const { data } = await saveBook({
-			variables: {
-				bookData: { bookInput },
-			}
+			variables: { bookData:  bookInput }
 		});
 		console.log(data || 'nothing returned from saveBook');
 		// if book successfully saves to user's account, save book id to state
 		setSavedBookIds([...savedBookIds, bookInput.bookId]);
 	};
-				
-	if (loading) return (<h2>Saving through SAVE_BOOK.</h2>);
-	if (error) return (<h2>Error saving your book.</h2>);
+
 	return (
 		<>
 			<div className="text-light bg-dark p-5">
