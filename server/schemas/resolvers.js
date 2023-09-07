@@ -14,7 +14,7 @@ const resolvers = {
 				return userData;
 			}
 
-			throw new AuthenticationError('No user logged in.');
+			throw new AuthenticationError('No user found');
 		},
 	},
 
@@ -43,21 +43,32 @@ const resolvers = {
 			const token = signToken(user);
 			return { token, user };
 		},
-		// TODO ADD CONTEXT AND TEST THIS
+		// FIXME
         saveBook: async (parent, args, context) => {
 			if (context.user) {
-				try {
-					const updatedUser = await User.findOneAndUpdate(
-					  { _id: context.user._id },
-					  { $addToSet: { 
-						  savedBooks: args.bookData 
-					  }},
-					  { new: true, runValidators: true }
-					);
-					return updatedUser;
-				  } catch (err) {
-					throw new AuthenticationError(err);
-				  }	
+				return User.findOneAndUpdate(
+					{ _id: context.user._id },
+					{ $addToSet: {
+						savedBooks: args.bookData
+					}},
+					{
+						new: true,
+						runValidators: true,
+					}
+				);
+
+				// try {
+				// 	const updatedUser = await User.findOneAndUpdate(
+				// 	  { _id: context.user._id },
+				// 	  { $addToSet: { 
+				// 		  savedBooks: args.bookData 
+				// 	  }},
+				// 	  { new: true, runValidators: true }
+				// 	);
+				// 	return updatedUser;
+				//   } catch (err) {
+				// 	throw new AuthenticationError(err);
+				//   }	
 			} else {
 				throw new AuthenticationError('Invalid authentication');
 			}
