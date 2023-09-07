@@ -35,7 +35,7 @@ export const ADD_USER = gql`
 }
 `;
 
-// TODO check that this wants user to be returned
+// WORKS
 export const SAVE_BOOK = gql`
     mutation SaveBook($bookData: bookInput!) {
         saveBook(bookData: $bookData) {
@@ -52,25 +52,24 @@ export const SAVE_BOOK = gql`
                 link
             }
         }
-}
+    }
 `;
 
+//WORKS
 export const REMOVE_BOOK = gql`
     mutation RemoveBook($bookId: ID!) {
         removeBook(bookId: $bookId) {
-            user {
-                _id
-                username
-                email
-                bookCount
-                savedBooks {
-                    bookId
-                    authors
-                    description
-                    title
-                    image
-                    link
-                }   
+            _id
+            username
+            email
+            bookCount
+            savedBooks {
+                bookId
+                authors
+                description
+                title
+                image
+                link
             }
         }
     }

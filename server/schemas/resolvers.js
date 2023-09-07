@@ -62,13 +62,19 @@ const resolvers = {
 			
         },
 		// WORKS ON BACKEND
-		removeBook: async (parent, args, context) => {
+		removeBook: async (parent, {bookId}, context) => {
 			if (context.user) {
-				return User.findOneAndUpdate(
-					{ _id: context.user._id },
-					{ $pull: { savedBooks: { bookId: args.bookId } } },
-					{ new: true }
-				);
+				try {
+					const userData = User.findOneAndUpdate(
+						{ _id: context.user._id },
+						{ $pull: { savedBooks: { bookId: bookId } } },
+						{ new: true }
+					);
+					return userData;
+				} catch (error) {
+					return error;
+				}
+				
 			} else {
 				throw new AuthenticationError('Invalid authentication');
 			}
