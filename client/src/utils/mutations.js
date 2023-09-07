@@ -37,7 +37,7 @@ export const ADD_USER = gql`
 
 // TODO check that this wants user to be returned
 export const SAVE_BOOK = gql`
-    mutation SaveBook($bookData: BookInput!) {
+    mutation SaveBook($bookData: bookInput!) {
         saveBook(bookData: $bookData) {
             _id
             username

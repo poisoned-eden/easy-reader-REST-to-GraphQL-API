@@ -17,7 +17,7 @@ import { removeBookId } from '../utils/localStorage';
 const SavedBooks = () => {
 	
 	// set up REMOVE_BOOK
-	const [removeBook, { data: removeBookData, loading: removeBookLoading, error: removeBookError }] = useMutation(REMOVE_BOOK);
+	const [removeBook, { error: removeBookError }] = useMutation(REMOVE_BOOK);
 	// run QUERY_ME
 	const { loading: queryMeLoading, error: queryMeError, data: queryMeData } = useQuery(QUERY_ME);
 	
@@ -42,8 +42,13 @@ const SavedBooks = () => {
 			return false;
 		}
 
-		await removeBook(bookId);
-		if (removeBookError) throw new Error('something went wrong removing that book');
+		await removeBook({
+			variables: { bookId: bookId}
+		});
+		if (removeBookError) {
+			console.error(removeBookError);
+			throw new Error('something went wrong removing that book');
+		};
   	};
 
   	return (
