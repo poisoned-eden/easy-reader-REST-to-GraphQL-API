@@ -15,7 +15,7 @@ import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 
 const SavedBooks = () => {
-  	console.log(Auth.getProfile());
+  	// console.log(Auth.getProfile());
   	const { loading, error, data } = useQuery(QUERY_ME);
 
 	if (loading) return (<h2>Loading through QUERY_ME</h2>);
@@ -47,8 +47,8 @@ const SavedBooks = () => {
 				<Row>
 				{userData.savedBooks.map((book) => {
 					return (
-					<Col md="4">
-						<Card key={book.bookId} border='dark'>
+					<Col md="4" key={book.bookId}>
+						<Card border='dark'>
 						{book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}
 						<Card.Body>
 							<Card.Title>{book.title}</Card.Title>
