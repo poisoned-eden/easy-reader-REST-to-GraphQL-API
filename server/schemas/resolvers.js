@@ -43,21 +43,25 @@ const resolvers = {
 			const token = signToken(user);
 			return { token, user };
 		},
-		// CANT WORK OUT HOW TO TEST UNTIL FRONTEND UP
 		// TODO ADD CONTEXT AND TEST THIS
         saveBook: async (parent, args, context) => {
-			console.log(args.user);
-			try {
-			  const updatedUser = await User.findOneAndUpdate(
-				{ _id: args.user._id },
-				{ $addToSet: { savedBooks: args.body } },
-				{ new: true, runValidators: true }
-			  );
-			  return updatedUser;
-			} catch (err) {
-			  console.log(err);
-			  throw new AuthenticationError(err);
+			if (context.user) {
+				try {
+					const updatedUser = await User.findOneAndUpdate(
+					  { _id: context.user._id },
+					  { $addToSet: { 
+						  savedBooks: args.bookData 
+					  }},
+					  { new: true, runValidators: true }
+					);
+					return updatedUser;
+				  } catch (err) {
+					throw new AuthenticationError(err);
+				  }	
+			} else {
+				throw new AuthenticationError('Invalid authentication');
 			}
+			
         },
 		// TODO TEST THIS
 		removeBook: async (parent, args, context) => {
