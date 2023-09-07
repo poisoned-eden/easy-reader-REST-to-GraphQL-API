@@ -4,7 +4,7 @@ const { signToken } = require('../utils/auth');
 
 const resolvers = {
 	Query: {
-		// WORKS WHEN LOGGED IN
+		// WORKS front and back
 		me: async (parent, args, context) => {
 			if (context.user) {
 				const userData = await User.findOne({
@@ -19,14 +19,14 @@ const resolvers = {
 	},
 
 	Mutation: {
-		// WORKS
+		// WORKS front and back
 		addUser: async (parent, args) => {
 			const userData = await User.create(args);
 			const token = signToken(userData);
 
 			return { token, userData };
 		},
-		// WORKS
+		// WORKS front and back
 		login: async (parent, args) => {
 			const user = await User.findOne({
 				$or: [{ username: args.username }, { email: args.email }],
@@ -43,7 +43,7 @@ const resolvers = {
 			const token = signToken(user);
 			return { token, user };
 		},
-		// FIXME
+		// WORKS ON BACKEND
         saveBook: async (parent, args, context) => {
 			if (context.user) {
 				return User.findOneAndUpdate(
@@ -56,35 +56,22 @@ const resolvers = {
 						runValidators: true,
 					}
 				);
-
-				// try {
-				// 	const updatedUser = await User.findOneAndUpdate(
-				// 	  { _id: context.user._id },
-				// 	  { $addToSet: { 
-				// 		  savedBooks: args.bookData 
-				// 	  }},
-				// 	  { new: true, runValidators: true }
-				// 	);
-				// 	return updatedUser;
-				//   } catch (err) {
-				// 	throw new AuthenticationError(err);
-				//   }	
 			} else {
 				throw new AuthenticationError('Invalid authentication');
 			}
 			
         },
-		// TODO TEST THIS
+		// WORKS ON BACKEND
 		removeBook: async (parent, args, context) => {
-			const updatedUser = await User.findOneAndUpdate(
-				{ _id: args.user._id },
-				{ $pull: { savedBooks: { bookId: args.bookId } } },
-				{ new: true }
-			  );
-			  if (!updatedUser) {
-				throw new AuthenticationError("Couldn't find user with this id");
-			  }
-			  return updatedUser;
+			if (context.user) {
+				return User.findOneAndUpdate(
+					{ _id: context.user._id },
+					{ $pull: { savedBooks: { bookId: args.bookId } } },
+					{ new: true }
+				);
+			} else {
+				throw new AuthenticationError('Invalid authentication');
+			}
 		}
 	},
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
 	Container,
 	Card,
@@ -9,26 +9,41 @@ import {
 
 import { useQuery, useMutation } from '@apollo/client';
 import { QUERY_ME } from '../utils/queries';
-import { DELETE_BOOK } from '../utils/mutations';
+import { REMOVE_BOOK } from '../utils/mutations';
 // import { getMe, deleteBook } from '../utils/API';
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
 
 const SavedBooks = () => {
-  	// console.log(Auth.getProfile());
-  	const { loading, error, data } = useQuery(QUERY_ME);
-
-	if (loading) return (<h2>Loading through QUERY_ME</h2>);
-	if (error) return (<h2>Error getting your data, please try and login again</h2>);
 	
-	const userData = data?.me || [];
-	// TODO saved books into state
-	// TODO useEffect function that rerenders when books held in state
+	// set up REMOVE_BOOK
+	const [removeBook, { data: removeBookData, loading: removeBookLoading, error: removeBookError }] = useMutation(REMOVE_BOOK);
+	// run QUERY_ME
+	const { loading: queryMeLoading, error: queryMeError, data: queryMeData } = useQuery(QUERY_ME);
+	
+	const token = Auth.loggedIn() ? Auth.getToken() : null;
+	
+	if (!token) {
+		return false;
+	}
+	
+	if (queryMeLoading) return (<h2>Loading...</h2>);
+	if (queryMeError) return (<h2>Error getting your data, please try to login again or clear your cache if this error persists.</h2>);
+
+	const userData = queryMeData?.me || [];
+	console.log(userData.bookCount);
 
   	// create function that accepts the book's mongo _id value as param and deletes the book from the user profile
 	// TODO 
 	const handleDeleteBook = async (bookId) => {
-		
+		const token = Auth.loggedIn() ? Auth.getToken() : null;
+	
+		if (!token) {
+			return false;
+		}
+
+		await removeBook(bookId);
+		if (removeBookError) throw new Error('something went wrong removing that book');
   	};
 
   	return (
@@ -40,8 +55,8 @@ const SavedBooks = () => {
 			</div>
 			<Container>
 				<h2 className='pt-5'>
-				{userData.savedBooks.length
-					? `Viewing ${userData.username}'s ${userData.savedBooks.length} saved ${userData.savedBooks.length === 1 ? 'book' : 'books'}:`
+				{userData.bookCount
+					? `Viewing ${userData.username}'s ${userData.bookCount} saved ${userData.bookCount === 1 ? 'book' : 'books'}:`
 					: `You have no saved books ${userData.username}!`}
 				</h2>
 				<Row>
