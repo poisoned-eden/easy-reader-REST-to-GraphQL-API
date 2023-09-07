@@ -4,6 +4,7 @@ const { signToken } = require('../utils/auth');
 
 const resolvers = {
 	Query: {
+		// WORKS front and back
 		me: async (parent, args, context) => {
 			if (context.user) {
 				const userData = await User.findOne({
@@ -13,19 +14,19 @@ const resolvers = {
 				return userData;
 			}
 
-			throw new AuthenticationError('No user logged in.');
+			throw new AuthenticationError('No user found');
 		},
 	},
 
 	Mutation: {
-		// WORKS
+		// WORKS front and back
 		addUser: async (parent, args) => {
 			const userData = await User.create(args);
 			const token = signToken(userData);
 
 			return { token, userData };
 		},
-		// WORKS
+		// WORKS front and back
 		login: async (parent, args) => {
 			const user = await User.findOne({
 				$or: [{ username: args.username }, { email: args.email }],
@@ -42,30 +43,41 @@ const resolvers = {
 			const token = signToken(user);
 			return { token, user };
 		},
-        saveBook: async (parent, args) => {
-			console.log(args.user);
-			try {
-			  const updatedUser = await User.findOneAndUpdate(
-				{ _id: args.user._id },
-				{ $addToSet: { savedBooks: args.body } },
-				{ new: true, runValidators: true }
-			  );
-			  return updatedUser;
-			} catch (err) {
-			  console.log(err);
-			  throw new AuthenticationError(err);
+		// WORKS ON BACKEND
+        saveBook: async (parent, args, context) => {
+			if (context.user) {
+				return User.findOneAndUpdate(
+					{ _id: context.user._id },
+					{ $addToSet: {
+						savedBooks: args.bookData
+					}},
+					{
+						new: true,
+						runValidators: true,
+					}
+				);
+			} else {
+				throw new AuthenticationError('Invalid authentication');
 			}
+			
         },
-		removeBook: async (parent, args) => {
-			const updatedUser = await User.findOneAndUpdate(
-				{ _id: args.user._id },
-				{ $pull: { savedBooks: { bookId: args.bookId } } },
-				{ new: true }
-			  );
-			  if (!updatedUser) {
-				throw new AuthenticationError("Couldn't find user with this id");
-			  }
-			  return updatedUser;
+		// WORKS ON BACKEND
+		removeBook: async (parent, {bookId}, context) => {
+			if (context.user) {
+				try {
+					const userData = User.findOneAndUpdate(
+						{ _id: context.user._id },
+						{ $pull: { savedBooks: { bookId: bookId } } },
+						{ new: true }
+					);
+					return userData;
+				} catch (error) {
+					return error;
+				}
+				
+			} else {
+				throw new AuthenticationError('Invalid authentication');
+			}
 		}
 	},
 };
