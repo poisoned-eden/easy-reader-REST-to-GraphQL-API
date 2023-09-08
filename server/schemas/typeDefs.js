@@ -6,6 +6,7 @@ const typeDefs = gql`
         username: String!
         email: String!
         bookCount: Int
+        bookIdArray: [String]
         savedBooks: [Book]
     }
 
