@@ -1,5 +1,4 @@
 import { gql } from '@apollo/client';
-// TODO check that id and name are all front end needs from user
 
 export const LOGIN = gql`
     mutation Login($email: String!, $password: String!) {
@@ -10,6 +9,7 @@ export const LOGIN = gql`
                 username
                 email
                 bookCount
+                bookIdArray
                 savedBooks {
                     bookId
                     authors
@@ -43,6 +43,7 @@ export const SAVE_BOOK = gql`
             username
             email
             bookCount
+            bookIdArray
             savedBooks {
                 bookId
                 authors
@@ -63,6 +64,7 @@ export const REMOVE_BOOK = gql`
             username
             email
             bookCount
+            bookIdArray
             savedBooks {
                 bookId
                 authors
