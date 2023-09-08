@@ -15,17 +15,17 @@ const SearchBooks = () => {
 	const [searchInput, setSearchInput] = useState('');
 	// set up SAVE_BOOK mutation for usage
 	const [saveBook, { data, loading, error }] = useMutation(SAVE_BOOK);
-	const bookIdArray = makeVar([]);
+	const savedBookIds = makeVar([]);
 	// query me to get previously saved book ID's
 	const { data: queryMeData } = useQuery(QUERY_ME);
 
 	if (queryMeData) {
 		const { savedBooks } = queryMeData.me;
 		savedBooks.forEach(book => {
-			bookIdArray([...bookIdArray(), book.bookId]);
+			savedBookIds([...savedBookIds(), book.bookId]);
 		});
 
-		console.log(bookIdArray());
+		console.log(savedBookIds());
 		
 	}
 		
@@ -136,24 +136,23 @@ const SearchBooks = () => {
 										</Card.Text>
 										{Auth.loggedIn() && (
 											<Button
-												// disabled={savedBookIds?.some(
-												// 	(savedBookId) =>
-												// 		savedBookId ===
-												// 		book.bookId
-												// )}
+												disabled={savedBookIds()?.some(
+													(savedBookId) =>
+														savedBookId ===
+														book.bookId
+												)}
 												className="btn-block btn-info"
 												onClick={() =>
 													handleSaveBook(book.bookId)
 												}
 											>
-												{/* {savedBookIds?.some(
+												{savedBookIds()?.some(
 													(savedBookId) =>
 														savedBookId ===
 														book.bookId
 												)
 													? 'Saved!'
-													: 'Save this Book!'} */}
-													Save this book
+													: 'Save this Book!'}
 											</Button>
 										)}
 									</Card.Body>
