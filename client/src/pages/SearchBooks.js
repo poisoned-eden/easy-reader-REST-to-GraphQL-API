@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Container, Col, Form, Button, Card, Row } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
@@ -14,7 +14,7 @@ const SearchBooks = () => {
 	// create state for holding our search field data
 	const [searchInput, setSearchInput] = useState('');
 	// set up SAVE_BOOK mutation for usage
-	const [saveBook, { data, loading, error }] = useMutation(SAVE_BOOK);
+	const [saveBook] = useMutation(SAVE_BOOK);
 	const savedBookIds = makeVar([]);
 	// query me to get previously saved book ID's
 	const { data: queryMeData } = useQuery(QUERY_ME);

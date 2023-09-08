@@ -52,16 +52,6 @@ userSchema.virtual("bookCount").get(function () {
   return this.savedBooks.length;
 });
 
-userSchema.virtual("bookIdArray").get(function () {
-  let array = [];
-  let i;
-  while (i < this.savedBooks.length) {
-    array.push(this.savedBooks[i].bookId);
-    i++;
-  }
-  return array;
-})
-
 const User = model("User", userSchema);
 
 module.exports = User;
